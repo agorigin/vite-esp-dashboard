@@ -49,7 +49,7 @@ app.get('/sensorData', verifyFirebaseToken, (req, res) => {
 });
 
 // 🔐 Protected: Post sensor data
-app.post('/data', verifyFirebaseToken, express.text(), (req, res) => {
+app.post('/data', express.text(), (req, res) => {
   const rawText = req.body.trim(); // e.g. "-1.3,-90.6,78.9"
   const [x, y, z] = rawText.split(',').map(Number);
 
@@ -57,8 +57,8 @@ app.post('/data', verifyFirebaseToken, express.text(), (req, res) => {
     return res.status(400).send('Invalid data format');
   }
 
-  latestData = { x, y, z };
-  console.log(`User ${req.user.uid} sent:`, latestData);
+  latestData = { x, y, z };  
+  console.log(`Received sensor data:`, latestData);
 
   res.status(200).send('Data received');
 });
