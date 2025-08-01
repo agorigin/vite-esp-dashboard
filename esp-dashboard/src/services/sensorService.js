@@ -1,6 +1,8 @@
 import { getAuth } from 'firebase/auth';
 
 const BASE_URL = 'http://localhost:3001';
+// const BASE_URL = 'https://vite-esp-dashboard.onrender.com';
+
 
 // Helper to get current user's Firebase ID token
 async function getIdToken() {

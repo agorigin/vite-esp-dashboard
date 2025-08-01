@@ -13,12 +13,29 @@ import { useState } from 'react';
 
 export default function ChartWithMultiSpeedometers({ labels, datasets }) {
   const [view, setView] = useState('chart'); // 'chart' or 'speedometer'
-// All visible by default
-const [visibleKeys, setVisibleKeys] = useState({
-  dx: true,
-  dy: true,
-  dz: true,
-});
+  // All visible by default
+  const [visibleKeys, setVisibleKeys] = useState({
+    dx: true,
+    dy: true,
+    dz: true,
+  });
+
+  const motionModes = {
+    'xyz': { label: 'Relative Angles(ΔX, ΔY, ΔZ)', keys: { dx: true, dy: true, dz: true } },
+    'flexion': { label: 'Flection/Extension (ΔY)', keys: { dx: false, dy: true, dz: false } },
+    'abduction': { label: 'Abduction/Adduction (ΔX)', keys: { dx: true, dy: false, dz: false } },
+    'knee': { label: 'Knee flexion (ΔY)', keys: { dx: false, dy: true, dz: false } },
+    'hip': { label: 'Hip Flexion (ΔY)', keys: { dx: false, dy: true, dz: false } },
+    'ankle': { label: 'Ankle foot flexion (ΔY)', keys: { dx: false, dy: true, dz: false } },
+  };
+
+  const [motionMode, setMotionMode] = useState('xyz');
+
+  const handleMotionModeChange = (event) => {
+    const selected = event.target.value;
+    setMotionMode(selected);
+    setVisibleKeys(motionModes[selected].keys);
+  };
 
   const chartData = labels.map((label, index) => ({
     time: label,
@@ -72,20 +89,31 @@ const [visibleKeys, setVisibleKeys] = useState({
         </button>
       </div>
 
+      {/* Dropdown */}
+      <div className="mb-4 flex justify-center">
+        <select
+          value={motionMode}
+          onChange={handleMotionModeChange}
+          className="px-4 py-2 rounded-md border border-gray-300 text-sm bg-white shadow-sm"
+        >
+          {Object.entries(motionModes).map(([key, { label }]) => (
+            <option key={key} value={key}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* Line Chart */}
       {view === 'chart' && (
         <div className="scroll-wrapper overflow-x-auto w-full">
-          <div className="flex justify-center gap-4 mb-4">
-            <button onClick={() => toggleKey('dx')} className={buttonStyle('dx')}>
-              X
-            </button>
-            <button onClick={() => toggleKey('dy')} className={buttonStyle('dy')}>
-              Y
-            </button>
-            <button onClick={() => toggleKey('dz')} className={buttonStyle('dz')}>
-              Z
-            </button>
-          </div>
+          {motionMode === 'xyz' && (
+            <div className="flex justify-center gap-4 mb-4">
+              <button onClick={() => toggleKey('dx')} className={buttonStyle('dx')}>X</button>
+              <button onClick={() => toggleKey('dy')} className={buttonStyle('dy')}>Y</button>
+              <button onClick={() => toggleKey('dz')} className={buttonStyle('dz')}>Z</button>
+            </div>
+          )}
 
           <div className="min-w-[700px] h-[400px] bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-4 border border-gray-200 dark:border-gray-700">
             <ResponsiveContainer width="100%" height="100%">
